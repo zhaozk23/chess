@@ -156,12 +156,12 @@ impl Timer {
     }
 }
 #[derive(Default)]
-struct TTEntry {
-    key: Hash,
-    flag: HashFlag,
-    vl: VL,
-    depth: Depth,
-    move_: Move,
+pub struct TTEntry {
+    pub key: Hash,
+    pub flag: HashFlag,
+    pub vl: VL,
+    pub depth: Depth,
+    pub mv: Move,
 }
 /// hash keys for zobrist hashing
 /// accessing: HASH_KEYS[size_t(piece + 7)][pos]

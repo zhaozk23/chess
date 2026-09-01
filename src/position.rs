@@ -570,4 +570,32 @@ impl Position {
         }
         false
     }
+    pub fn see_ge(&mut self, mv: Move) -> bool {
+        let victim = WEIGHTS[self.get_piece(mv.end).abs() as usize];
+        let attacker = WEIGHTS[self.get_piece(mv.beg).abs() as usize];
+        if victim >= attacker {
+            return true;
+        }
+        self.do_move(mv);
+        let protected = self.get_protector(mv.end) < 90;
+        self.undo_move();
+        !protected
+    }
+    pub fn mvvlva_sort(&self, moves: &mut Vec<Move>) {
+        moves.sort_by(|a, b| {
+            let a_beg = WEIGHTS[self.get_piece(a.beg).abs() as usize];
+            let a_end = WEIGHTS[self.get_piece(a.end).abs() as usize];
+            let b_beg = WEIGHTS[self.get_piece(b.beg).abs() as usize];
+            let b_end = WEIGHTS[self.get_piece(b.end).abs() as usize];
+            let sa = a_beg - a_end;
+            let sb = b_beg - b_end;
+            if sa != sb {
+                sa.cmp(&sb)
+            } else if a.beg != b.beg {
+                a.beg.cmp(&b.beg)
+            } else {
+                a.end.cmp(&b.end)
+            }
+        });
+    }
 }
