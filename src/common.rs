@@ -12,10 +12,10 @@ pub type VL = i16;
 pub type Hash = i64;
 pub type PregenData = u8;
 pub type HashFlag = i8;
-#[derive(Default, PartialEq, Eq)]
+#[derive(Default, PartialEq, Eq, Clone, Copy)]
 pub struct Move {
-    beg: u8,
-    end: u8,
+    pub beg: u8,
+    pub end: u8,
 }
 
 pub type SearchRet = (Move, VL);
@@ -72,45 +72,45 @@ pub type Matrix = [PType; 90];
 pub type PregenTable = [[PregenData; 1024]; 10];
 pub type GenType = u8;
 
-const INVALID_POS: Pos = 100;
-const EXACT: HashFlag = 0;
-const ALPHA: HashFlag = 1;
-const BETA: HashFlag = 2;
-const R_KING: PType = 1;
-const R_ADVISOR: PType = 2;
-const R_BISHOP: PType = 3;
-const R_KNIGHT: PType = 4;
-const R_ROOK: PType = 5;
-const R_CANNON: PType = 6;
-const R_PAWN: PType = 7;
-const B_KING: PType = -1;
-const B_ADVISOR: PType = -2;
-const B_BISHOP: PType = -3;
-const B_KNIGHT: PType = -4;
-const B_ROOK: PType = -5;
-const B_CANNON: PType = -6;
-const B_PAWN: PType = -7;
-const R: Team = 1;
-const B: Team = -1;
-const INF: VL = 30000;
-const BAN: VL = 20000;
-const INVALID_VL: VL = -31000;
-const SIDE_KEY: Hash = 7655453740479314502;
-const Q_MAX_DISTANCE: Depth = 8;
-const FP_MARGIN: VL = 120;
-const Q_CHECKING_DEPTH: Depth = 4;
-const Q_DELTA_MARGIN: VL = 80;
-const NULL_MOVE_R: Depth = 2;
-const NULL_MOVE_MIN_DEPTH: Depth = 3;
-const LMR_MIN_DEPTH: Depth = 3;
-const LMR_MIN_MOVES: i32 = 3;
-const LMR_BASE: Depth = 1;
-const QUIET: GenType = 0;
-const CAPTURE: GenType = 1;
-const ALL: GenType = 2;
-const NODE_PV: bool = false;
-const NODE_CUT: bool = true;
-const WEIGHTS: [VL; 8] = [0, 30, 2, 2, 4, 10, 5, 1];
+pub const INVALID_POS: Pos = 100;
+pub const EXACT: HashFlag = 0;
+pub const ALPHA: HashFlag = 1;
+pub const BETA: HashFlag = 2;
+pub const R_KING: PType = 1;
+pub const R_ADVISOR: PType = 2;
+pub const R_BISHOP: PType = 3;
+pub const R_KNIGHT: PType = 4;
+pub const R_ROOK: PType = 5;
+pub const R_CANNON: PType = 6;
+pub const R_PAWN: PType = 7;
+pub const B_KING: PType = -1;
+pub const B_ADVISOR: PType = -2;
+pub const B_BISHOP: PType = -3;
+pub const B_KNIGHT: PType = -4;
+pub const B_ROOK: PType = -5;
+pub const B_CANNON: PType = -6;
+pub const B_PAWN: PType = -7;
+pub const R: Team = 1;
+pub const B: Team = -1;
+pub const INF: VL = 30000;
+pub const BAN: VL = 20000;
+pub const INVALID_VL: VL = -31000;
+pub const SIDE_KEY: Hash = 7655453740479314502;
+pub const Q_MAX_DISTANCE: Depth = 8;
+pub const FP_MARGIN: VL = 120;
+pub const Q_CHECKING_DEPTH: Depth = 4;
+pub const Q_DELTA_MARGIN: VL = 80;
+pub const NULL_MOVE_R: Depth = 2;
+pub const NULL_MOVE_MIN_DEPTH: Depth = 3;
+pub const LMR_MIN_DEPTH: Depth = 3;
+pub const LMR_MIN_MOVES: i32 = 3;
+pub const LMR_BASE: Depth = 1;
+pub const QUIET: GenType = 0;
+pub const CAPTURE: GenType = 1;
+pub const ALL: GenType = 2;
+pub const NODE_PV: bool = false;
+pub const NODE_CUT: bool = true;
+pub const WEIGHTS: [VL; 8] = [0, 30, 2, 2, 4, 10, 5, 1];
 
 fn set_left_4bit(d: &mut PregenData, n: u32) {
     *d |= (n << 4) as u8
@@ -165,7 +165,7 @@ struct TTEntry {
 }
 /// hash keys for zobrist hashing
 /// accessing: HASH_KEYS[size_t(piece + 7)][pos]
-static HASH_KEYS: LazyLock<[[i64; 90]; 15]> = LazyLock::new(|| {
+pub static HASH_KEYS: LazyLock<[[i64; 90]; 15]> = LazyLock::new(|| {
     let mut rng = StdRng::seed_from_u64(2820795095);
     let mut ret = [[0i64; 90]; 15];
     for row in &mut ret {
@@ -177,7 +177,7 @@ static HASH_KEYS: LazyLock<[[i64; 90]; 15]> = LazyLock::new(|| {
     ret
 });
 /// pregen points for rook and cannon non-capture moves
-static ROOK_PREGEN: LazyLock<PregenTable> = LazyLock::new(|| {
+pub static ROOK_PREGEN: LazyLock<PregenTable> = LazyLock::new(|| {
     let mut ret = [[0u8; 1024]; 10];
     for (pos, row) in ret.iter_mut().enumerate() {
         for (bitline, entry) in row.iter_mut().enumerate() {
@@ -198,7 +198,7 @@ static ROOK_PREGEN: LazyLock<PregenTable> = LazyLock::new(|| {
     ret
 });
 /// pregen points for cannon capture moves
-static CANNON_PREGEN: LazyLock<PregenTable> = LazyLock::new(|| {
+pub static CANNON_PREGEN: LazyLock<PregenTable> = LazyLock::new(|| {
     let mut ret = [[0u8; 1024]; 10];
     for (pos, row) in ret.iter_mut().enumerate() {
         for (bitline, entry) in row.iter_mut().enumerate() {
@@ -374,7 +374,7 @@ const PST_CANNON: [VL; 90] = [
     300, 310, 300, 295, 295, 290, 290, 295, 295, 300, 315, 300, 295, 295, 290, 285, 290, 290, 295,
     300, 295, 290, 290, 285, 285, 290, 290, 295, 295, 295, 290, 290, 285,
 ];
-fn pst(team: Team, abs_type: PType, pos: Pos) -> VL {
+pub fn pst(team: Team, abs_type: PType, pos: Pos) -> VL {
     let sq = if team == R { pos } else { 89 - pos };
     match abs_type {
         R_ADVISOR => PST_ADVISOR[sq as usize],
