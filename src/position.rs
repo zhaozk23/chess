@@ -6,14 +6,14 @@ struct History {
     keys: Vec<Hash>,
 }
 pub struct Position {
-    board: Matrix,
+    pub(crate) board: Matrix,
     pub(crate) team: Team,
     pub(crate) key: Hash,
-    eval: VL,
+    pub(crate) eval: VL,
     history: History,
 
-    pos_list_r: Vec<Pos>,
-    pos_list_b: Vec<Pos>,
+    pub(crate) pos_list_r: Vec<Pos>,
+    pub(crate) pos_list_b: Vec<Pos>,
     pos_pid_r: [Pid; 90],
     pos_pid_b: [Pid; 90],
     bl10_items: [u16; 10],
