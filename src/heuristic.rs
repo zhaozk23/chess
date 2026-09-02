@@ -21,21 +21,22 @@ impl HistoryTable {
             self.table_b[beg][end] += (depth * depth) as u32;
         }
     }
+    pub fn sort_by_history(&self, moves: &mut Vec<Move>, team: Team) {
+        let t = if team == R { self.table_r } else { self.table_b };
+        moves.sort_by(|a, b| {
+            let ha = t[a.beg as usize][a.end as usize];
+            let hb = t[b.beg as usize][b.end as usize];
+            if ha != hb {
+                hb.cmp(&ha)
+            } else if a.beg != b.beg {
+                a.beg.cmp(&b.beg)
+            } else {
+                a.end.cmp(&b.end)
+            }
+        });
+    }
 }
-pub fn sort_by_history(h: &HistoryTable, moves: &mut Vec<Move>, team: Team) {
-    let t = if team == R { h.table_r } else { h.table_b };
-    moves.sort_by(|a, b| {
-        let ha = t[a.beg as usize][a.end as usize];
-        let hb = t[b.beg as usize][b.end as usize];
-        if ha != hb {
-            hb.cmp(&ha)
-        } else if a.beg != b.beg {
-            a.beg.cmp(&b.beg)
-        } else {
-            a.end.cmp(&b.end)
-        }
-    });
-}
+
 pub struct KillerTable([[Move; 2]; 128]);
 impl KillerTable {
     pub fn new() -> Self {
@@ -53,7 +54,7 @@ impl KillerTable {
         self.0[d as usize]
     }
 }
-struct TT {
+pub struct TT {
     table: Vec<TTEntry>,
     size: u32,
     mask: u32,

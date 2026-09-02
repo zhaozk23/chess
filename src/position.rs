@@ -7,8 +7,8 @@ struct History {
 }
 pub struct Position {
     board: Matrix,
-    team: Team,
-    key: Hash,
+    pub(crate) team: Team,
+    pub(crate) key: Hash,
     eval: VL,
     history: History,
 
