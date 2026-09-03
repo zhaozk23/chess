@@ -18,7 +18,6 @@ pub struct Move {
     pub end: u8,
 }
 
-pub type SearchRet = (Move, VL);
 impl Move {
     pub fn new(beg: u8, end: u8) -> Self {
         Self { beg, end }
@@ -127,7 +126,7 @@ fn get_right_4bit(d: PregenData) -> u8 {
 fn get_bit(d: u32, i: u32) -> u32 {
     (d >> i) & 1
 }
-struct Timer {
+pub struct Timer {
     beg: Instant,
     limit: Duration,
 }

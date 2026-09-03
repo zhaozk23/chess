@@ -221,7 +221,7 @@ impl Position {
 }
 
 #[derive(Default)]
-struct MovePicker {
+pub struct MovePicker {
     starts: [Move; 3],
     moves: Vec<Move>,
     i: isize,
